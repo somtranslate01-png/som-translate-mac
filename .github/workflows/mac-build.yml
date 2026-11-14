@@ -11,6 +11,10 @@ jobs:
         run: |
           mkdir -p Sources/SomTranslateMac
           mv main.swift AppDelegate.swift HotKey.swift OCR.swift RegionPicker.swift ScreenCapture.swift SubtitleWindow.swift Translator.swift Sources/SomTranslateMac/
+      - name: Compile errors only
+        continue-on-error: true
+        run: |
+          swift build -c release 2>&1 | grep -E 'error:' | sed 's|.*/Sources/||' | sort -u | head -60
       - name: Build
         run: |
           chmod +x build-app.sh
