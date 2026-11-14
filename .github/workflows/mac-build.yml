@@ -1,0 +1,21 @@
+name: Build Mac app
+on:
+  workflow_dispatch:
+  push:
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - name: Arrange sources
+        run: |
+          mkdir -p Sources/SomTranslateMac
+          mv main.swift AppDelegate.swift HotKey.swift OCR.swift RegionPicker.swift ScreenCapture.swift SubtitleWindow.swift Translator.swift Sources/SomTranslateMac/
+      - name: Build
+        run: |
+          chmod +x build-app.sh
+          ./build-app.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: SomTranslateMac
+          path: build/SomTranslateMac.zip
