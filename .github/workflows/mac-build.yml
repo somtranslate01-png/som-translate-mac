@@ -11,10 +11,13 @@ jobs:
         run: |
           mkdir -p Sources/SomTranslateMac
           mv main.swift AppDelegate.swift HotKey.swift OCR.swift RegionPicker.swift ScreenCapture.swift SubtitleWindow.swift Translator.swift Sources/SomTranslateMac/
-      - name: Compile errors only
+      - name: Compile check (arm64)
         continue-on-error: true
         run: |
-          swift build -c release 2>&1 | grep -E 'error:' | sed 's|.*/Sources/||' | sort -u | head -60
+          swift build -c release --arch arm64 > out.txt 2>&1 || true
+          echo "::notice::lines=$(wc -l < out.txt)"
+          grep -E 'error' out.txt | sort -u | head -9 | while IFS= read -r l; do echo "::error::${l##*/Sources/}"; done
+          tail -4 out.txt | while IFS= read -r l; do echo "::notice::${l##*/Sources/}"; done
       - name: Build
         run: |
           chmod +x build-app.sh
